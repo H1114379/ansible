@@ -1,5 +1,5 @@
 ---
-- name: System-Update für Rocky Linux
+- name: Intelligentes System-Update
   hosts: all
   become: yes
   tasks:
@@ -8,3 +8,16 @@
         name: "*"
         state: latest
         update_cache: yes
+
+    - name: Prüfen, ob ein Neustart erforderlich ist
+      ansible.builtin.command: needs-restarting -r
+      register: reboot_required
+      ignore_errors: yes
+      failed_when: false
+      changed_when: false
+
+    - name: Server neu starten, falls nötig
+      ansible.builtin.reboot:
+        msg: "Ansible Update-Sitzung erzwingt Neustart"
+        reboot_timeout: 600
+      when: reboot_required.rc != 0
