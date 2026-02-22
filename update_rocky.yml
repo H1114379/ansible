@@ -1,0 +1,10 @@
+---
+- name: System-Update für Rocky Linux
+  hosts: all
+  become: yes
+  tasks:
+    - name: Alle Pakete aktualisieren
+      ansible.builtin.dnf:
+        name: "*"
+        state: latest
+        update_cache: yes
